@@ -1,0 +1,1 @@
+Simple whiteboard application using HTML and JS. 

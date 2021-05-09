@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>White Board</title>
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+        integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+</head>
+
+<body>
+    <section id="canvasContainer">
+        <section id="toolTray">
+            <div class="trayIcon" onclick="showMarkerTray()">
+                <i class="fa fa-highlighter"></i>
+            </div>
+            <section id="markerTray">
+                <section class="tray-container">
+                    <label>COLOR:</label>
+                    <section id="#17202A" class="marker black">&nbsp;</section>
+                    <section id="#3498DB" class="marker blue">&nbsp;</section>
+                    <section id="#E74C3C" class="marker red">&nbsp;</section>
+                    <section id="#229954" class="marker green">&nbsp;</section>
+                    <section id="#8E44AD" class="marker purple">&nbsp;</section>
+                </section>
+                <section class="tray-container">
+                    <label>THICKNESS:</label>
+                    <section id="2" class="thickness very-thin">&nbsp;</section>
+                    <section id="8" class="thickness thin">&nbsp;</section>
+                    <section id="15" class="thickness medium">&nbsp;</section>
+                    <section id="23" class="thickness thick">&nbsp;</section>
+                    <section id="30" class="thickness very-thick">&nbsp;</section>
+                </section>
+            </section>
+            <div class="trayIcon" onclick="alert('Move around')">
+                <i class="fa fa-arrows-alt"></i>
+            </div>
+            <div class="trayIcon" onclick="alert('Zoom in')">
+                <i class="fa fa-search-plus"></i>
+            </div>
+            <div class="trayIcon" onclick="alert('Zoom out')">
+                <i class="fa fa-search-minus"></i>
+            </div>
+            <div class="trayIcon" onclick="alert('Add text or image')">
+                <i class="fa fa-plus"></i>
+            </div>
+            <div class="trayIcon" onclick="alert('Save to S3')">
+                <i class="fa fa-save"></i>
+            </div>
+            <div class="trayIcon" onclick="undoLine()">
+                <i class="fa fa-undo"></i>
+            </div>
+            <div class="trayIcon" onclick="clearCanvas()">
+                <i class="fa fa-trash"></i>
+            </div>
+            <div class="trayIcon" onclick="downloadCanvas()">
+                <i class="fa fa-download"></i>
+            </div>
+            <div class="trayIcon" onclick="uploadImage()">
+                <i class="fa fa-upload"></i>
+            </div>
+            <div class="trayIcon" onclick="alert('Share with people')">
+                <i class="fa fa-share"></i>
+            </div>
+            <div class="trayIcon" onclick="alert('Report an issue')">
+                <i class="fa fa-bug"></i>
+            </div>
+        </section>
+        <canvas id="canvas"></canvas>
+        <a id="drawingImage" style="display:none;" download>
+    </section>
+</body>
+
+</html>
+
+<style>
+    :root {
+        --white: #FFF;
+        --light-gray: #F2F3F4;
+        --gray: #BDC3C7;
+        --dark-gray: #626567;
+    }
+
+    body {
+        background-color: var(--light-gray);
+        font-family: sans-serif;
+        margin: 0;
+        user-select: none;
+        height: 100%;
+    }
+
+    #canvasContainer {
+        height: calc(100vh - 1em);
+        width: calc(100% - 1em);
+        background-color: var(--white);
+        -webkit-box-shadow: 0 0 1em var(--gray);
+        box-shadow: 0 0 1em var(--gray);
+        border-radius: 0.25em;
+        margin: 0.5em;
+    }
+
+    #toolTray {
+        float: left;
+    }
+
+    #canvas {
+        width: calc(100% - 60px);
+        height: calc(100vh - 1em);
+        float: right;
+        border-left: 1px solid var(--gray);
+        border-radius: 0em 0.25em 0.25em 0em;
+    }
+
+    .trayIcon {
+        width: 59px;
+        height: 60px;
+        line-height: 60px;
+        text-align: center;
+        color: var(--dark-gray);
+        border-bottom: 1px solid var(--gray);
+    }
+
+    .trayIcon:hover {
+        background-color: var(--light-gray)
+    }
+
+    #markerTray {
+        display: none;
+        width: 250px;
+        height: 100px;
+        background-color: var(--white);
+        -webkit-box-shadow: 0.1em 0.1em 0.25em var(--gray);
+        box-shadow: 0.1em 0.1em 0.25em var(--gray);
+        position: absolute;
+        top: 0.5em;
+        margin-left: 60px;
+    }
+
+    .tray-container {
+        height: 3em;
+    }
+
+    .tray-container>label {
+        margin-left: 1em;
+        display: inline-block;
+        width: 100px;
+        color: var(--dark-gray);
+        font-size: 0.8em;
+    }
+
+    .marker {
+        height: 1em;
+        margin-top: 1em;
+        margin-right: 0.25em;
+        text-align: center;
+        width: 1em;
+        border-radius: 0.5em;
+        display: inline-block;
+        cursor: pointer;
+    }
+
+    .black {
+        background-color: #17202A;
+    }
+
+    .blue {
+        background-color: #3498DB;
+    }
+
+    .red {
+        background-color: #E74C3C;
+    }
+
+    .green {
+        background-color: #229954;
+    }
+
+    .purple {
+        background-color: #8E44AD;
+    }
+
+    .thickness {
+        display: inline-block;
+        cursor: pointer;
+        margin-top: 1em;
+        height: 1em;
+        margin-right: 0.25em;
+        background-color: var(--gray);
+        border-radius: 3px;
+    }
+
+    .very-thin {
+        width: 4px;
+    }
+
+    .thin {
+        width: 8px;
+    }
+
+    .medium {
+        width: 12px;
+    }
+
+    .thick {
+        width: 16px;
+    }
+
+    .very-thick {
+        width: 20px;
+    }
+</style>
+
+<script>
+    const initCanvasContext = () => {
+        let canvas = document.getElementById('canvas');
+        if (canvas.getContext) {
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            let context = canvas.getContext('2d');
+            return [canvas, context];
+        } else {
+            throw new Error('Unable to find canvas')
+        }
+    }
+
+    const initBackground = () => {
+        if (!background) {
+            let background = context.rect(0, 0, canvas.width, canvas.height);
+            context.fillStyle = 'white';
+            context.fill(background);
+        } else {
+            context.drawImage(background, 0, 0)
+        }
+    }
+
+    const setLineStyle = (color, width) => {
+        context.strokeStyle = color;
+        context.lineWidth = width;
+        context.lineCap = "round";
+    }
+
+    let currentLine = 0;
+    let lines = [];
+    let isDrawing = false;
+    let background = null;
+    let [canvas, context] = initCanvasContext();
+    initBackground();
+    setLineStyle('#17202A', 2);
+
+    const draw = (points) => {
+        if (points.length > 3) {
+            context.beginPath(), context.moveTo(points[0].x, points[0].y);
+            for (i = 1; i < points.length - 2; i++) {
+                let c = (points[i].x + points[i + 1].x) / 2;
+                let d = (points[i].y + points[i + 1].y) / 2;
+                context.quadraticCurveTo(points[i].x, points[i].y, c, d);
+            }
+            context.quadraticCurveTo(points[i].x, points[i].y, points[i + 1].x, points[i + 1].y);
+            context.stroke();
+        }
+    }
+
+    const findMouseLocation = (e = window.event) => {
+        let canvasLimits = e.target.getBoundingClientRect();
+        let x = e.clientX - canvasLimits.left;
+        let y = e.clientY - canvasLimits.top;
+        return { x: x, y: y };
+    }
+
+    const handleMouseMoving = (e = window.event) => {
+        let coordinates = findMouseLocation(e);
+        if (coordinates.x >= 0 && coordinates.y >= 0) {
+            lines[currentLine].points.push(coordinates);
+            draw(lines[currentLine].points);
+        }
+    }
+
+    const mountHandleMouseMoving = (e = window.event) => {
+        if (e.target.id === 'canvas') {
+            isDrawing = true;
+            let coordinates = findMouseLocation(e);
+            let line = {
+                width: context.lineWidth,
+                color: context.strokeStyle,
+                points: [coordinates]
+            }
+            lines[currentLine] = line;
+            context.beginPath();
+            document.onmousemove = (e) => handleMouseMoving(e);
+        }
+    }
+
+    const unmountHandleMouseMoving = () => {
+        if (isDrawing) {
+            context.closePath();
+            currentLine++;
+            document.onmousemove = null;
+            isDrawing = false;
+
+            // refine this, basically redraw the canvas after they are done. Makes it smoother
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            console.log(lines)
+            lines.forEach(line => {
+                setLineStyle(line.color, line.width);
+                draw(line.points);
+            });
+        }
+    }
+
+    const clearCanvas = () => {
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        lines = [];
+        currentLine = 0;
+        background = null;
+        initBackground();
+    }
+
+    const undoLine = () => {
+        currentLine = currentLine--;
+        lines.pop();
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        initBackground();
+        lines.forEach(line => {
+            setLineStyle(line.color, line.width);
+            draw(line.points);
+        });
+    }
+
+    const downloadCanvas = () => {
+        const dataURL = canvas.toDataURL();
+        document.getElementById("drawingImage").href = dataURL;
+        document.getElementById("drawingImage").click();
+    }
+
+    const uploadImage = () => {
+        let img = new Image();
+        img.src = '/Users/marlena/Downloads/download (10).png';
+        img.onload = () => {
+            context.drawImage(img, 0, 0)
+        }
+        background = img;
+    }
+
+    const showMarkerTray = () => {
+        if (document.getElementById('markerTray').style.display === 'block') {
+            document.getElementById('markerTray').style.display = 'none';
+        } else {
+            document.getElementById('markerTray').style.display = 'block';
+        }
+    }
+
+    // Event Listeners
+    document.onmousedown = mountHandleMouseMoving;
+    document.onmouseup = unmountHandleMouseMoving;
+
+    Array.from(document.getElementsByClassName('marker')).forEach(element => {
+        element.addEventListener('click', () => {
+            context.strokeStyle = element.id;
+            document.getElementById('markerTray').style.display = 'none';
+        });
+    });
+    Array.from(document.getElementsByClassName('thickness')).forEach(element => {
+        element.addEventListener('click', () => {
+            context.lineWidth = parseInt(element.id);
+            document.getElementById('markerTray').style.display = 'none';
+        });
+    });
+
+</script>
